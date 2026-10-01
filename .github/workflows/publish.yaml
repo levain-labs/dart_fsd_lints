@@ -1,0 +1,44 @@
+name: Publish to pub.dev
+
+# pub.devの自動公開(OIDC)。トークンをsecretに置かない。
+# 事前にpub.devのパッケージ管理画面で「Automated publishing」を有効にし、
+# リポジトリ levain-labs/dart_fsd_lints・タグパターン v{{version}}・
+# 環境 pub.dev を登録しておく。
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    # GitHubの環境で承認者を設定すれば、公開前に人の確認を挟める。
+    environment: pub.dev
+    permissions:
+      contents: read
+      # pub.devへのOIDC認証に使う。setup-dartがトークンの受け渡しを設定する。
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
+        with:
+          sdk: '3.12.2'
+      - name: 依存の取得
+        run: dart pub get
+        shell: bash
+      - name: テスト
+        run: dart test
+        shell: bash
+      - name: 公開
+        run: dart pub publish --force
+        shell: bash

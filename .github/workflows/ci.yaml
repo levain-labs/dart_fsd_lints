@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        # 下限(pubspecのsdk制約)と最新stableの両方で確かめる。
+        # analyzerはSDKとロックステップで動くため、stableでの失敗は
+        # 新しいSDKへの追従が必要という合図になる。
+        sdk: ['3.12.2', stable]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
+        with:
+          sdk: ${{ matrix.sdk }}
+      - name: 依存の取得
+        run: dart pub get
+        shell: bash
+      - name: フォーマットの検査
+        run: dart format --output=none --set-exit-if-changed .
+        shell: bash
+      - name: 静的解析
+        run: dart analyze --fatal-infos
+        shell: bash
+      - name: テスト
+        run: dart test
+        shell: bash
+      # pub.devの公開時の検査(説明文・ファイル構成など)を先に通しておく。
+      - name: 公開の事前検査
+        run: dart pub publish --dry-run
+        shell: bash
