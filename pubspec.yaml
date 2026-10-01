@@ -1,8 +1,8 @@
 name: feature_sliced_lints
 description: >-
   Analyzer plugin that enforces Feature-Sliced Design (layers, slices, public
-  APIs) and a few related conventions in Dart and Flutter projects.
-version: 0.1.0
+  APIs and a pure domain) in Dart and Flutter projects.
+version: 0.2.0
 repository: https://github.com/levain-labs/dart_fsd_lints
 issue_tracker: https://github.com/levain-labs/dart_fsd_lints/issues
 topics:

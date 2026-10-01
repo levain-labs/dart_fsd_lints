@@ -75,15 +75,6 @@ class FsdConfig {
   };
 }
 
-/// One entry of `banned_imports`: bans imports/exports starting with
-/// [uriPrefix].
-class BannedImport {
-  const BannedImport({required this.uriPrefix, required this.reason});
-
-  final String uriPrefix;
-  final String reason;
-}
-
 /// The `domain_purity` section.
 class DomainPurityConfig {
   const DomainPurityConfig({
@@ -100,49 +91,14 @@ class DomainPurityConfig {
   final Set<String> allowedPackages;
 }
 
-/// The `presentational_purity` section.
-class PresentationalPurityConfig {
-  const PresentationalPurityConfig({
-    this.fileSuffix = '_view.dart',
-    this.forbiddenPackages = const {},
-  });
-
-  /// Files ending with this are presentational.
-  final String fileSuffix;
-
-  /// Packages presentational files must not import. Nothing is checked while
-  /// this is empty.
-  final Set<String> forbiddenPackages;
-}
-
-/// The `provider_declaration_location` section.
-class ProviderDeclarationLocationConfig {
-  const ProviderDeclarationLocationConfig({
-    this.fileSuffix = '_providers.dart',
-  });
-
-  /// The only files where Riverpod providers may be declared.
-  final String fileSuffix;
-}
-
 /// The contents of [lintConfigFileName]. A missing file means the defaults.
 class LintConfig {
-  LintConfig({
-    FsdConfig? fsd,
-    this.bannedImports = const [],
-    this.domainPurity,
-    this.presentationalPurity = const PresentationalPurityConfig(),
-    this.providerDeclarationLocation =
-        const ProviderDeclarationLocationConfig(),
-  }) : fsd = fsd ?? FsdConfig();
+  LintConfig({FsdConfig? fsd, this.domainPurity}) : fsd = fsd ?? FsdConfig();
 
   final FsdConfig fsd;
-  final List<BannedImport> bannedImports;
 
   /// `null` turns `domain_purity` off.
   final DomainPurityConfig? domainPurity;
-  final PresentationalPurityConfig presentationalPurity;
-  final ProviderDeclarationLocationConfig providerDeclarationLocation;
 
   static final LintConfig defaults = LintConfig();
 
@@ -190,14 +146,7 @@ class LintConfig {
     }
     return LintConfig(
       fsd: _parseFsd(root['fsd']),
-      bannedImports: _parseBannedImports(root['banned_imports']),
       domainPurity: _parseDomainPurity(root['domain_purity']),
-      presentationalPurity: _parsePresentationalPurity(
-        root['presentational_purity'],
-      ),
-      providerDeclarationLocation: _parseProviderDeclarationLocation(
-        root['provider_declaration_location'],
-      ),
     );
   }
 
@@ -255,22 +204,6 @@ class LintConfig {
     );
   }
 
-  static List<BannedImport> _parseBannedImports(Object? node) {
-    if (node == null) return const [];
-    if (node is! YamlList) {
-      throw const FormatException('banned_imports must be a list.');
-    }
-    return [
-      for (final Object? entry in node)
-        if (entry case {'uri': final String uri, 'reason': final String reason})
-          BannedImport(uriPrefix: uri, reason: reason)
-        else
-          throw FormatException(
-            'Each banned_imports entry needs uri and reason: $entry',
-          ),
-    ];
-  }
-
   static DomainPurityConfig? _parseDomainPurity(Object? node) {
     if (node == null) return null;
     final YamlMap map = _map(node, 'domain_purity');
@@ -280,37 +213,6 @@ class LintConfig {
       allowedPackages: {
         ...?_strings(map['allowed_packages'], 'domain_purity.allowed_packages'),
       },
-    );
-  }
-
-  static PresentationalPurityConfig _parsePresentationalPurity(Object? node) {
-    if (node == null) return const PresentationalPurityConfig();
-    final YamlMap map = _map(node, 'presentational_purity');
-    return PresentationalPurityConfig(
-      fileSuffix:
-          _string(map['file_suffix'], 'presentational_purity.file_suffix') ??
-          '_view.dart',
-      forbiddenPackages: {
-        ...?_strings(
-          map['forbidden_packages'],
-          'presentational_purity.forbidden_packages',
-        ),
-      },
-    );
-  }
-
-  static ProviderDeclarationLocationConfig _parseProviderDeclarationLocation(
-    Object? node,
-  ) {
-    if (node == null) return const ProviderDeclarationLocationConfig();
-    final YamlMap map = _map(node, 'provider_declaration_location');
-    return ProviderDeclarationLocationConfig(
-      fileSuffix:
-          _string(
-            map['file_suffix'],
-            'provider_declaration_location.file_suffix',
-          ) ??
-          '_providers.dart',
     );
   }
 

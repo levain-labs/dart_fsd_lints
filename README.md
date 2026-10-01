@@ -1,7 +1,7 @@
 # feature_sliced_lints
 
 An analyzer plugin that enforces [Feature-Sliced Design](https://feature-sliced.design/)
-in Dart and Flutter projects, plus a few conventions that usually come with it.
+in Dart and Flutter projects: layers, slices, public APIs and a pure domain.
 
 It is built on the official analyzer plugin system (`analysis_server_plugin`),
 so diagnostics show up in the IDE and in `dart analyze` without extra tooling.
@@ -14,11 +14,6 @@ so diagnostics show up in the IDE and in `dart analyze` without extra tooling.
 | `fsd_no_cross_slice` | Slices on the same layer don't import each other, except through `@x` entry points (`<layer>/<other>/@x/<me>.dart`). |
 | `fsd_public_api` | Outside a slice, import it only through its barrel file (`<slice>/<slice>.dart` or `<slice>/index.dart`). Has a quick fix that rewrites the URI to the barrel file. |
 | `domain_purity` | The domain directory of each slice stays pure Dart: only its own package, `dart:` (except `dart:ui`) and allowed packages. |
-| `banned_imports` | Imports/exports starting with a configured URI prefix are reported with your reason. |
-| `presentational_purity` | Presentational files (`*_view.dart`) don't import configured packages (state management, persistence, analytics, ...). |
-| `provider_declaration_location` | Top-level Riverpod 3 providers are declared only in `*_providers.dart`. |
-| `no_direct_datetime_now` | `DateTime.now()` isn't called directly (inject a clock instead). |
-| `no_direct_debug_print` | `print` / `debugPrint` aren't called directly (use a logger instead). |
 
 ## Setup
 
@@ -28,17 +23,12 @@ Plugin rules are disabled by default.
 ```yaml
 plugins:
   feature_sliced_lints:
-    version: ^0.1.0
+    version: ^0.2.0
     diagnostics:
       fsd_layer_imports: true
       fsd_no_cross_slice: true
       fsd_public_api: true
       domain_purity: true
-      banned_imports: true
-      presentational_purity: true
-      provider_declaration_location: true
-      no_direct_datetime_now: true
-      no_direct_debug_print: true
 ```
 
 Restart the Dart Analysis Server in your IDE after changing the `plugins`
@@ -56,13 +46,13 @@ so add `--fatal-infos` to fail the build on them.
 To suppress a diagnostic, prefix the rule with the plugin name:
 
 ```dart
-// ignore: feature_sliced_lints/no_direct_datetime_now
+// ignore: feature_sliced_lints/fsd_public_api
 ```
 
 ## Configuration
 
-Put `feature_sliced_lints.yaml` next to `pubspec.yaml`. Everything is optional; a missing
-file means the defaults below. A malformed file fails the analysis instead of
+Put `feature_sliced_lints.yaml` next to `pubspec.yaml`. Everything is optional;
+a missing file means the defaults below. A malformed file fails the analysis instead of
 silently checking nothing.
 
 ```yaml
@@ -83,17 +73,6 @@ fsd:
 domain_purity:
   directory: domain # <root>/<layer>/<slice>/domain/
   allowed_packages: [meta, collection]
-
-banned_imports:
-  - uri: package:mockito/
-    reason: Use fakes instead of mocks.
-
-presentational_purity:
-  file_suffix: _view.dart
-  forbidden_packages: [flutter_riverpod, cloud_firestore] # nothing is checked while empty
-
-provider_declaration_location:
-  file_suffix: _providers.dart
 ```
 
 ## Quick fixes
