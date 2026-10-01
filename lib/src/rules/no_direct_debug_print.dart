@@ -8,7 +8,7 @@ import 'package:analyzer/error/error.dart';
 
 /// Disallows `print`/`debugPrint` (including tear-offs) so that output goes
 /// through a logger. Exclude the logger's console sink explicitly with
-/// `// ignore_for_file: fsd_lints/no_direct_debug_print`.
+/// `// ignore_for_file: feature_sliced_lints/no_direct_debug_print`.
 class NoDirectDebugPrint extends AnalysisRule {
   static const LintCode code = LintCode(
     'no_direct_debug_print',

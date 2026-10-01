@@ -1,6 +1,6 @@
 import 'package:analyzer/analysis_rule/rule_context.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:fsd_lints/src/lint_config.dart';
+import 'package:feature_sliced_lints/src/lint_config.dart';
 
 /// A path under the FSD root, split into layer, slice and the rest.
 class FsdLocation {

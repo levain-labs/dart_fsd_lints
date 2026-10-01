@@ -2,11 +2,11 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:analyzer_testing/analysis_rule/analysis_rule.dart';
-import 'package:fsd_lints/src/lint_config.dart';
-import 'package:fsd_lints/src/rules/no_direct_datetime_now.dart';
-import 'package:fsd_lints/src/rules/no_direct_debug_print.dart';
-import 'package:fsd_lints/src/rules/presentational_purity.dart';
-import 'package:fsd_lints/src/rules/provider_declaration_location.dart';
+import 'package:feature_sliced_lints/src/lint_config.dart';
+import 'package:feature_sliced_lints/src/rules/no_direct_datetime_now.dart';
+import 'package:feature_sliced_lints/src/rules/no_direct_debug_print.dart';
+import 'package:feature_sliced_lints/src/rules/presentational_purity.dart';
+import 'package:feature_sliced_lints/src/rules/provider_declaration_location.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 void main() {

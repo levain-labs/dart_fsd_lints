@@ -4,7 +4,7 @@ import 'package:analyzer/analysis_rule/rule_visitor_registry.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/error/error.dart';
-import 'package:fsd_lints/src/lint_config.dart';
+import 'package:feature_sliced_lints/src/lint_config.dart';
 
 /// Presentational files (`*_view.dart` by default) don't know about state
 /// management, persistence or analytics: they must not import the packages

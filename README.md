@@ -1,4 +1,4 @@
-# fsd_lints
+# feature_sliced_lints
 
 An analyzer plugin that enforces [Feature-Sliced Design](https://feature-sliced.design/)
 in Dart and Flutter projects, plus a few conventions that usually come with it.
@@ -27,7 +27,7 @@ Plugin rules are disabled by default.
 
 ```yaml
 plugins:
-  fsd_lints:
+  feature_sliced_lints:
     version: ^0.1.0
     diagnostics:
       fsd_layer_imports: true
@@ -56,12 +56,12 @@ so add `--fatal-infos` to fail the build on them.
 To suppress a diagnostic, prefix the rule with the plugin name:
 
 ```dart
-// ignore: fsd_lints/no_direct_datetime_now
+// ignore: feature_sliced_lints/no_direct_datetime_now
 ```
 
 ## Configuration
 
-Put `fsd_lints.yaml` next to `pubspec.yaml`. Everything is optional; a missing
+Put `feature_sliced_lints.yaml` next to `pubspec.yaml`. Everything is optional; a missing
 file means the defaults below. A malformed file fails the analysis instead of
 silently checking nothing.
 

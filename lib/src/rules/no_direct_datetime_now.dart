@@ -8,7 +8,7 @@ import 'package:analyzer/error/error.dart';
 
 /// Disallows calling `DateTime.now()` directly so that time is injected
 /// through a clock. Exclude the production clock implementation explicitly
-/// with `// ignore: fsd_lints/no_direct_datetime_now`.
+/// with `// ignore: feature_sliced_lints/no_direct_datetime_now`.
 class NoDirectDatetimeNow extends AnalysisRule {
   static const LintCode code = LintCode(
     'no_direct_datetime_now',

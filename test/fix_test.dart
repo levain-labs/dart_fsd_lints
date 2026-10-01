@@ -1,9 +1,9 @@
 // test_reflective_loader finds tests by the test_ method name prefix.
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:fsd_lints/src/fixes/use_barrel_import.dart';
-import 'package:fsd_lints/src/lint_config.dart';
-import 'package:fsd_lints/src/rules/fsd_public_api.dart';
+import 'package:feature_sliced_lints/src/fixes/use_barrel_import.dart';
+import 'package:feature_sliced_lints/src/lint_config.dart';
+import 'package:feature_sliced_lints/src/rules/fsd_public_api.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 

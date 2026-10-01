@@ -4,4 +4,4 @@
 /// exists so that the package has a library named after it.
 library;
 
-export 'package:fsd_lints/main.dart' show FsdLintsPlugin;
+export 'package:feature_sliced_lints/main.dart' show FeatureSlicedLintsPlugin;

@@ -8,7 +8,7 @@ import 'package:yaml/yaml.dart';
 /// The `diagnostics` section of `analysis_options.yaml` only carries
 /// enable/disable and severity per rule, so project-specific values
 /// (layer names, allowed packages, ...) are passed through this file.
-const String lintConfigFileName = 'fsd_lints.yaml';
+const String lintConfigFileName = 'feature_sliced_lints.yaml';
 
 /// How a slice exposes its public API.
 enum BarrelStyle {

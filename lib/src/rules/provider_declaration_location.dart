@@ -5,7 +5,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/error/error.dart';
-import 'package:fsd_lints/src/lint_config.dart';
+import 'package:feature_sliced_lints/src/lint_config.dart';
 
 /// Restricts top-level Riverpod provider declarations to `*_providers.dart`
 /// (configurable with `provider_declaration_location.file_suffix`).

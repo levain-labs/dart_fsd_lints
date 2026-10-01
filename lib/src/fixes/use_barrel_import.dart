@@ -4,8 +4,8 @@ import 'package:analysis_server_plugin/edit/dart/dart_fix_kind_priority.dart';
 import 'package:analysis_server_plugin/edit/fix/fix.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/source/source_range.dart';
-import 'package:fsd_lints/src/fsd.dart';
-import 'package:fsd_lints/src/lint_config.dart';
+import 'package:feature_sliced_lints/src/fsd.dart';
+import 'package:feature_sliced_lints/src/lint_config.dart';
 
 /// The fix for `fsd_public_api`: points the import/export at the slice's
 /// barrel file instead of its internal file.
@@ -17,7 +17,7 @@ class UseBarrelImport extends ResolvedCorrectionProducer {
   UseBarrelImport({required super.context});
 
   static const FixKind kind = FixKind(
-    'fsd_lints.fix.useBarrelImport',
+    'feature_sliced_lints.fix.useBarrelImport',
     DartFixKindPriority.standard,
     "Import through the barrel file '{0}'",
   );

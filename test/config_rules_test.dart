@@ -6,9 +6,9 @@
 // ignore: implementation_imports
 import 'package:analyzer/src/diagnostic/diagnostic.dart' as diag;
 import 'package:analyzer_testing/analysis_rule/analysis_rule.dart';
-import 'package:fsd_lints/src/lint_config.dart';
-import 'package:fsd_lints/src/rules/banned_imports.dart';
-import 'package:fsd_lints/src/rules/domain_purity.dart';
+import 'package:feature_sliced_lints/src/lint_config.dart';
+import 'package:feature_sliced_lints/src/rules/banned_imports.dart';
+import 'package:feature_sliced_lints/src/rules/domain_purity.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 

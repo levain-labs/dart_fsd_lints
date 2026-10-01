@@ -4,7 +4,7 @@ import 'package:analyzer/analysis_rule/rule_visitor_registry.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/error/error.dart';
-import 'package:fsd_lints/src/fsd.dart';
+import 'package:feature_sliced_lints/src/fsd.dart';
 
 /// Slices on the same layer can't import each other. The only exception is
 /// the FSD v2.1 `@x` notation, reproduced as a folder convention

@@ -2,10 +2,10 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:analyzer_testing/analysis_rule/analysis_rule.dart';
-import 'package:fsd_lints/src/lint_config.dart';
-import 'package:fsd_lints/src/rules/fsd_layer_imports.dart';
-import 'package:fsd_lints/src/rules/fsd_no_cross_slice.dart';
-import 'package:fsd_lints/src/rules/fsd_public_api.dart';
+import 'package:feature_sliced_lints/src/lint_config.dart';
+import 'package:feature_sliced_lints/src/rules/fsd_layer_imports.dart';
+import 'package:feature_sliced_lints/src/rules/fsd_no_cross_slice.dart';
+import 'package:feature_sliced_lints/src/rules/fsd_public_api.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 void main() {

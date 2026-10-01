@@ -4,8 +4,8 @@ import 'package:analyzer/analysis_rule/rule_visitor_registry.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/error/error.dart';
-import 'package:fsd_lints/src/fsd.dart';
-import 'package:fsd_lints/src/lint_config.dart';
+import 'package:feature_sliced_lints/src/fsd.dart';
+import 'package:feature_sliced_lints/src/lint_config.dart';
 
 /// Keeps the domain layer (`<root>/<layer>/<slice>/domain/`) pure Dart. It may
 /// only import/export its own package, `dart:` libraries (except `dart:ui`)
