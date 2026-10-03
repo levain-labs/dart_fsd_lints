@@ -30,9 +30,17 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # SDK のバージョンは mise.toml を正とする。
+      - name: Dart のバージョンの読み取り
+        id: dart-version
+        # 代入にしないと、スクリプトの失敗が step の失敗にならない。
+        run: |
+          version=$(.github/scripts/dart-version.sh)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+        shell: bash
       - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
         with:
-          sdk: '3.12.2'
+          sdk: ${{ steps.dart-version.outputs.version }}
       - name: 依存の取得
         run: dart pub get
         shell: bash
