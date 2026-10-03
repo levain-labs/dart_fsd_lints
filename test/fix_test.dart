@@ -15,10 +15,39 @@ void main() {
   });
 
   group('barrelUriFor', () {
+    final Uri source = Uri.parse('package:app/features/auth/auth.dart');
+
     test('points into the slice barrel', () {
       expect(
-        barrelUriFor('package:app/entities/user/domain/user.dart', FsdConfig()),
+        barrelUriFor(
+          'package:app/entities/user/domain/user.dart',
+          FsdConfig(),
+          source,
+        ),
         'package:app/entities/user/user.dart',
+      );
+    });
+
+    test('keeps relative URIs relative', () {
+      expect(
+        barrelUriFor(
+          '../../entities/user/domain/user.dart',
+          FsdConfig(),
+          source,
+        ),
+        '../../entities/user/user.dart',
+      );
+      expect(
+        barrelUriFor('../login/ui/login.dart', FsdConfig(), source),
+        '../login/login.dart',
+      );
+      expect(
+        barrelUriFor(
+          'features/login/ui/login.dart',
+          FsdConfig(),
+          Uri.parse('package:app/main.dart'),
+        ),
+        'features/login/login.dart',
       );
     });
 
@@ -27,14 +56,22 @@ void main() {
         barrelUriFor(
           'package:app/src/features/auth/ui/login.dart',
           FsdConfig(root: 'lib/src', barrel: BarrelStyle.indexFile),
+          source,
         ),
         'package:app/src/features/auth/index.dart',
       );
     });
 
     test('is null outside slices', () {
-      expect(barrelUriFor('package:app/shared/clock.dart', FsdConfig()), null);
-      expect(barrelUriFor('dart:async', FsdConfig()), null);
+      expect(
+        barrelUriFor('package:app/shared/clock.dart', FsdConfig(), source),
+        null,
+      );
+      expect(
+        barrelUriFor('../../shared/clock.dart', FsdConfig(), source),
+        null,
+      );
+      expect(barrelUriFor('dart:async', FsdConfig(), source), null);
     });
   });
 }
@@ -61,6 +98,15 @@ class UseBarrelImportTest extends AnalysisRuleFixTest {
     expect(lastProducer.fixArguments, [
       'package:test/entities/maker/maker.dart',
     ]);
+  }
+
+  Future<void> test_relativeStaysRelative() async {
+    await assertHasFix(
+      'features/print/x.dart',
+      "export '../../entities/maker/domain/maker.dart';\n",
+      "export '../../entities/maker/maker.dart';\n",
+    );
+    expect(lastProducer.fixArguments, ['../../entities/maker/maker.dart']);
   }
 
   Future<void> test_keepsQuoteStyle() async {

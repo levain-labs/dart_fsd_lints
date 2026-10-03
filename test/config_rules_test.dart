@@ -121,6 +121,15 @@ export 'package:test/shared/clock.dart';
     );
   }
 
+  Future<void> test_relativeOwn_isAllowed() async {
+    await assertDiagnosticsInFile(
+      libFile('features/print/domain/x.dart', r'''
+export '../../../shared/clock.dart';
+'''),
+      [],
+    );
+  }
+
   Future<void> test_outsideDomain_isNotChecked() async {
     await assertDiagnosticsInFile(
       libFile(
