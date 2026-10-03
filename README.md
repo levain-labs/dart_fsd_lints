@@ -15,6 +15,11 @@ so diagnostics show up in the IDE and in `dart analyze` without extra tooling.
 | `fsd_public_api` | Outside a slice, import it only through its barrel file (`<slice>/<slice>.dart` or `<slice>/index.dart`). Has a quick fix that rewrites the URI to the barrel file. |
 | `domain_purity` | The domain directory of each slice stays pure Dart: only its own package, `dart:` (except `dart:ui`) and allowed packages. |
 
+All rules check both relative imports/exports (`'../../features/x/x.dart'`)
+and `package:` ones (`'package:my_app/features/x/x.dart'`): a relative URI is
+resolved against the importing file the same way the analyzer does, so both
+spellings of the same file are treated alike.
+
 ## Setup
 
 Add the plugin to `analysis_options.yaml` and enable the rules you want.
@@ -23,7 +28,7 @@ Plugin rules are disabled by default.
 ```yaml
 plugins:
   feature_sliced_lints:
-    version: ^0.2.0
+    version: ^0.3.0
     diagnostics:
       fsd_layer_imports: true
       fsd_no_cross_slice: true
@@ -79,7 +84,7 @@ domain_purity:
 
 | Rule | Fix |
 |---|---|
-| `fsd_public_api` | Rewrites the import/export URI to the slice's barrel file. Offered one location at a time in the IDE; plugin fixes can't be applied in bulk with `dart fix`. If the barrel doesn't export the symbol yet, export it there. |
+| `fsd_public_api` | Rewrites the import/export URI to the slice's barrel file, keeping its style (a relative URI stays relative, a `package:` URI stays `package:`). Offered one location at a time in the IDE; plugin fixes can't be applied in bulk with `dart fix`. If the barrel doesn't export the symbol yet, export it there. |
 
 ## Compatibility
 

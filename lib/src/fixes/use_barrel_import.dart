@@ -44,6 +44,7 @@ class UseBarrelImport extends ResolvedCorrectionProducer {
     final String? barrelUri = barrelUriFor(
       literal.value,
       LintConfig.forPackageRoot(packageRootOf(unitResult.file)).fsd,
+      unitResult.libraryElement.uri,
     );
     if (barrelUri == null) return;
     _barrelUri = barrelUri;
@@ -57,17 +58,41 @@ class UseBarrelImport extends ResolvedCorrectionProducer {
   }
 }
 
-/// The `package:` URI of the barrel file of the slice that [uri] points into,
-/// or `null` when [uri] isn't inside a slice.
-String? barrelUriFor(String uri, FsdConfig config) {
-  if (!uri.startsWith('package:')) return null;
-  final List<String> segments = uri.substring('package:'.length).split('/');
-  if (segments.length < 2) return null;
-  final FsdLocation? target = FsdLocation.parse(
-    config,
-    segments.skip(1).join('/'),
-  );
-  final String? barrel = target?.barrelPath;
+/// The URI of the barrel file of the slice that [uri] points into, or `null`
+/// when [uri] isn't inside a slice. [uri] is written in the file at
+/// [sourceUri]; a relative [uri] gets a relative barrel URI, a `package:` one
+/// a `package:` URI.
+String? barrelUriFor(String uri, FsdConfig config, Uri sourceUri) {
+  final Uri? target = resolveDirectiveUri(sourceUri, uri);
+  if (target == null ||
+      !target.isScheme('package') ||
+      target.pathSegments.isEmpty) {
+    return null;
+  }
+  final String packageName = target.pathSegments.first;
+  final String? libRelativePath = libRelativePathOf(packageName, target);
+  if (libRelativePath == null) return null;
+  final String? barrel = FsdLocation.parse(config, libRelativePath)?.barrelPath;
   if (barrel == null) return null;
-  return 'package:${segments.first}/$barrel';
+  final Uri barrelUri = Uri(scheme: 'package', path: '$packageName/$barrel');
+  return Uri.parse(uri).hasScheme
+      ? barrelUri.toString()
+      : _relativeUri(sourceUri, barrelUri);
+}
+
+/// [to] relative to the directory of [from] (both `package:` URIs of the same
+/// package).
+String _relativeUri(Uri from, Uri to) {
+  final List<String> fromDir = [...from.pathSegments]..removeLast();
+  final List<String> toSegments = to.pathSegments;
+  int common = 0;
+  while (common < fromDir.length &&
+      common < toSegments.length - 1 &&
+      fromDir[common] == toSegments[common]) {
+    common++;
+  }
+  return [
+    for (int i = common; i < fromDir.length; i++) '..',
+    ...toSegments.skip(common),
+  ].join('/');
 }

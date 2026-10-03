@@ -82,7 +82,7 @@ class FsdLocation {
 /// Resolves the analyzed file and its import/export targets to FSD
 /// locations.
 class FsdContext {
-  FsdContext._(this.packageName, this.config, this.source);
+  FsdContext._(this.sourceUri, this.config, this.source);
 
   /// Created when the analyzed file is under `lib/` of its own package.
   static FsdContext? of(RuleContext context) {
@@ -92,23 +92,50 @@ class FsdContext {
     }
     final FsdConfig config = LintConfig.of(context).fsd;
     return FsdContext._(
-      uri.pathSegments.first,
+      uri,
       config,
       FsdLocation.parse(config, uri.pathSegments.skip(1).join('/')),
     );
   }
 
-  final String packageName;
+  /// The `package:` URI of the analyzed file.
+  final Uri sourceUri;
   final FsdConfig config;
+
+  String get packageName => sourceUri.pathSegments.first;
 
   /// The location of the analyzed file (`null` outside the layers).
   final FsdLocation? source;
 
   /// The location a directive points to, if it is inside the own package.
+  /// Relative URIs are resolved against the analyzed file, so
+  /// `'../x/x.dart'` and `'package:<pkg>/.../x/x.dart'` are checked alike.
   FsdLocation? targetOf(NamespaceDirective directive) {
     final String? uri = directive.uri.stringValue;
-    final String prefix = 'package:$packageName/';
-    if (uri == null || !uri.startsWith(prefix)) return null;
-    return FsdLocation.parse(config, uri.substring(prefix.length));
+    if (uri == null) return null;
+    final String? libRelativePath = libRelativePathOf(
+      packageName,
+      resolveDirectiveUri(sourceUri, uri),
+    );
+    if (libRelativePath == null) return null;
+    return FsdLocation.parse(config, libRelativePath);
   }
+}
+
+/// Resolves a directive [uri] written in the file at [sourceUri] the way the
+/// analyzer does: relative URIs become `package:` URIs (`..` stops at the
+/// package's `lib/`), ones with a scheme are returned as they are. `null` when
+/// [uri] isn't a valid URI.
+Uri? resolveDirectiveUri(Uri sourceUri, String uri) {
+  final Uri? parsed = Uri.tryParse(uri);
+  return parsed == null ? null : sourceUri.resolveUri(parsed);
+}
+
+/// The path under `lib/` that [uri] points to (e.g.
+/// `entities/user/user.dart`), if it is a `package:` URI of [packageName].
+String? libRelativePathOf(String packageName, Uri? uri) {
+  if (uri == null || !uri.isScheme('package')) return null;
+  final List<String> segments = uri.pathSegments;
+  if (segments.length < 2 || segments.first != packageName) return null;
+  return segments.skip(1).join('/');
 }

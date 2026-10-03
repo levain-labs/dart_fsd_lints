@@ -124,6 +124,35 @@ export 'package:test/app/arti_app.dart';
       [],
     );
   }
+
+  Future<void> test_relativeUpward_isReported() async {
+    await assertDiagnosticsInFile(
+      libFile('entities/product/x.dart', r'''
+export '../../features/print/print.dart';
+'''),
+      [lint(7, 33)],
+    );
+  }
+
+  Future<void> test_relativeDownward_isAllowed() async {
+    await assertDiagnosticsInFile(
+      libFile('pages/product_list/x.dart', r'''
+export '../../features/print/print.dart';
+export '../../shared/shared.dart';
+'''),
+      [],
+    );
+  }
+
+  Future<void> test_relativeAboveLib_staysInLib() async {
+    await assertDiagnosticsInFile(
+      libFile('shared/x.dart', r'''
+export '../../app/arti_app.dart';
+'''),
+      // Like the analyzer, `..` stops at lib/, so this is lib/app/arti_app.dart.
+      [lint(7, 25)],
+    );
+  }
 }
 
 @reflectiveTest
@@ -222,6 +251,43 @@ export 'package:test/shared/clock.dart';
       [],
     );
   }
+
+  Future<void> test_relativeOtherSlice_isReported() async {
+    await assertDiagnosticsInFile(
+      libFile('entities/product/x.dart', r'''
+export '../maker/maker.dart';
+'''),
+      [lint(7, 21)],
+    );
+  }
+
+  Future<void> test_relativeCrossImportForSomeoneElse_isReported() async {
+    writeLib('entities/maker/@x/paper.dart', 'class MP {}');
+    await assertDiagnosticsInFile(
+      libFile('entities/product/x.dart', r'''
+export '../maker/@x/paper.dart';
+'''),
+      [lint(7, 24)],
+    );
+  }
+
+  Future<void> test_relativeCrossImportForMe_isAllowed() async {
+    await assertDiagnosticsInFile(
+      libFile('entities/product/x.dart', r'''
+export '../maker/@x/product.dart';
+'''),
+      [],
+    );
+  }
+
+  Future<void> test_relativeSameSlice_isAllowed() async {
+    await assertDiagnosticsInFile(
+      libFile('entities/maker/x.dart', r'''
+export 'domain/maker.dart';
+'''),
+      [],
+    );
+  }
 }
 
 @reflectiveTest
@@ -304,6 +370,51 @@ export 'package:test/entities/maker/@x/product.dart';
     await assertDiagnosticsInFile(
       libFile('features/print/x.dart', r'''
 export 'package:test/shared/clock.dart';
+'''),
+      [],
+    );
+  }
+
+  Future<void> test_relativeInternalFile_isReported() async {
+    await assertDiagnosticsInFile(
+      libFile('features/print/x.dart', r'''
+export '../../entities/maker/domain/maker.dart';
+'''),
+      [lint(7, 40)],
+    );
+  }
+
+  Future<void> test_relativeInternalFileFromOutsideLayers_isReported() async {
+    await assertDiagnosticsInFile(
+      libFile('main.dart', r'''
+export 'pages/settings/settings_screen.dart';
+'''),
+      [lint(7, 37)],
+    );
+  }
+
+  Future<void> test_relativeBarrel_isAllowed() async {
+    await assertDiagnosticsInFile(
+      libFile('features/print/x.dart', r'''
+export '../../entities/maker/maker.dart';
+'''),
+      [],
+    );
+  }
+
+  Future<void> test_relativeSameSliceInternal_isAllowed() async {
+    await assertDiagnosticsInFile(
+      libFile('entities/maker/x.dart', r'''
+export 'domain/maker.dart';
+'''),
+      [],
+    );
+  }
+
+  Future<void> test_relativeCrossImportForMe_isAllowed() async {
+    await assertDiagnosticsInFile(
+      libFile('entities/product/x.dart', r'''
+export '../maker/@x/product.dart';
 '''),
       [],
     );
