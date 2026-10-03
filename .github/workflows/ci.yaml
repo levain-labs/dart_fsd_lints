@@ -14,7 +14,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # SDK のバージョンは mise.toml を正とする(pubspec の下限とも一致を確かめる)。
+  dart-version:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.read.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: read
+        # 代入にしないと、スクリプトの失敗が step の失敗にならない。
+        run: |
+          version=$(.github/scripts/dart-version.sh)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+        shell: bash
+
   test:
+    needs: dart-version
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -22,10 +42,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 下限(pubspecのsdk制約)と最新stableの両方で確かめる。
+        # 下限(mise.toml = pubspecのsdk制約)と最新stableの両方で確かめる。
         # analyzerはSDKとロックステップで動くため、stableでの失敗は
         # 新しいSDKへの追従が必要という合図になる。
-        sdk: ['3.12.2', stable]
+        sdk: ['${{ needs.dart-version.outputs.version }}', stable]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
